@@ -51,7 +51,7 @@ const Page = (props: Props) => {
         setIsLoading(false);
       }
     })();
-  }, []);
+  });
 
   if (isLoading) {
     <div className="flex items-center justify-center h-screen">
@@ -73,7 +73,7 @@ const Page = (props: Props) => {
         >
           <LayoutPreview />
           <div className="flex-1 ml-64 pr-17">
-            <Editor />
+            <Editor isEditable={true} />
           </div>
         </div>
       </div>

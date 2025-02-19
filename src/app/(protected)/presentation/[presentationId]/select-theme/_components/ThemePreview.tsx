@@ -24,7 +24,7 @@ const ThemePreview = (props: Props) => {
     if (project?.slides) {
       redirect(`/presentation/${params.presentationId}`);
     }
-  }, [project]);
+  });
 
   useEffect(() => {
     controls.start("visible");

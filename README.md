@@ -49,11 +49,20 @@ npm install
 Create a `.env` file in the root directory and configure the database connection:
 
 ```env
-# Local DB (For Docker Compliance)
-DATABASE_URL=postgresql://postgres:password@db:5432/mydatabase
+DATABASE_URL="ask_for_code"
 
-# Neon (Production)
-DATABASE_URL=postgresql://your_username:your_password@your-neon-hostname:5432/your_database
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=ask_for_key
+CLERK_SECRET_KEY=Ask_For_key
+NEXT_PUBLIC_CLERK_SIGN_IN_FORCE_REDIRECT=/callback
+NEXT_PUBLIC_CLERK_SIGN_UP_FORCE_REDIRECT=/callback
+
+NEXT_PUBLIC_HOST_URL="http://localhost:3000"
+
+OPENAI_API_KEY= "Key_provided_by_hackathon"
+
+STRIPE
+
+
 ```
 
 ### **4️⃣ Run Prisma Migrations**
@@ -72,25 +81,98 @@ Your app will be available at `http://localhost:3000`
 
 ---
 
-## 🐳 **Running the App with Docker**
+🚀 Running EurekAI with Docker
 
-To fully containerize EurekAI and comply with hackathon requirements:
+To fully containerize EurekAI and comply with hackathon requirements, follow these steps:
 
-### **1️⃣ Build and Start Docker Containers**
+1️⃣ Build and Start Docker Containers
 
-```bash
-docker-compose up --build
-```
+Run the following command to build the image and start the application:
 
-### **2️⃣ Apply Prisma Migrations inside Docker**
+docker-compose up --build -d
 
-```bash
+This will:
+
+Build the Docker container.
+
+Install all dependencies.
+
+Start the Next.js application inside the container.
+
+Serve it on port 80 (http://localhost).
+
+Note: The -d flag runs the container in the background. If you want to see real-time logs, use:
+
+docker logs -f eurekai_app
+
+2️⃣ Apply Prisma Migrations (If Using a Database)
+
+If your application relies on a PostgreSQL database (such as Neon), apply the latest Prisma migrations inside the running container:
+
 docker exec -it eurekai_app npx prisma migrate deploy
-```
 
-The app will be accessible at `http://localhost:80`
+This will ensure the database schema is up to date.
 
----
+If the application does not use Prisma, this step can be skipped.
+
+3️⃣ Access the Application
+
+Once everything is running, open your browser and visit:
+
+http://localhost
+
+Since the app runs on port 80, there’s no need to specify a port.
+
+4️⃣ Managing the Application
+
+To stop the application:
+
+docker-compose down
+
+To restart the application without rebuilding:
+
+docker-compose up -d
+
+To rebuild and restart the application:
+
+docker-compose up --build -d
+
+📌 Troubleshooting & Common Issues
+
+❗ Prisma Client Initialization Errors
+
+If you encounter Prisma errors such as:
+
+Error: Prisma Client could not locate the Query Engine for runtime "linux-musl".
+
+Ensure your schema.prisma file includes:
+
+generator client {
+provider = "prisma-client-js"
+binaryTargets = ["native", "linux-musl"]
+}
+
+Then, regenerate Prisma inside the container:
+
+docker exec -it eurekai_app npx prisma generate
+
+❗ Environment Variables Not Loaded
+
+If the application is not picking up your environment variables:
+
+Ensure your .env file is correctly placed in the root directory.
+
+If variables are missing inside Docker, explicitly pass them using:
+
+docker-compose --env-file .env up --build
+
+❗ Debugging & Checking Logs
+
+If the application is not working as expected, check the logs:
+
+docker logs -f eurekai_app
+
+✅ Final Checklist Before Submission
 
 ## 🔍 **Project Structure**
 
